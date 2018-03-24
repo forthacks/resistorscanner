@@ -24,18 +24,21 @@ signedGradients = True
 for i in range(5):
     with open('C://Users/riley/Documents/data_batch_'+str(i+1), 'rb') as file:
         dict = pickle.load(file, encoding='bytes')
-        data.append(dict['data'])
-        labels.append(dict['labels'])
+        data.append(dict[b'data'])
+        labels.append(dict[b'labels'])
 
 
 ### Create HOG ###
 hog = cv2.HOGDescriptor(winSize,blockSize,blockStride,cellSize,nbins,derivAperture,winSigma,histogramNormType,L2HysThreshold,gammaCorrection,nlevels,signedGradients)
-
+descriptor = []
+# for im in data:
+#     descriptor.append(hog.compute(im))
+descriptor.append(hog.compute(data[0]))
 
 ### SVM ###
 svm = cv2.ml.SVM_create()
-svm.setType(cv2.m1.SVM_C_SVC)
-scm.setKernel(cv2.ml.SVM_RBF) #RBF might not work on android
-svm.setC(C)
-svm.setGamma(gamma)
-svm.train(data, cv2.ml.ROW_SAMPLE, labels)
+svm.setType(cv2.ml.SVM_C_SVC)
+svm.setKernel(cv2.ml.SVM_RBF) #RBF might not work on android
+svm.setC(12.5)
+svm.setGamma(0.50625)
+svm.trainAuto(descriptor, cv2.ml.ROW_SAMPLE, labels)
